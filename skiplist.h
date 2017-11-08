@@ -82,6 +82,7 @@ public:
 	int zslRandomLevel();
 	void deleteRangeByRank(const int64_t& start,const int64_t& end, std::vector<int64_t>& resList, const int64_t& limitCount=-1);
 	void deleteRangeByScore(const int64_t& start,const int64_t& end, std::vector<int64_t>& resList, const int64_t& limitCount=-1);
+	int64_t getRank(const int64_t& member,const int64_t& score);
 public:
 	SkipList()
 	{
@@ -124,7 +125,7 @@ void SkipList::deleteRangeByRank(const int64_t& start,const int64_t& end, std::v
 	SKNode *update[MAXLEVEL];
 	SKNode* current = header->level[0].forward;
 	SKNode* tmp;
-	//tmp = current = getNodeByRank(tmpStart+1);
+
 	int64_t through = -1;
 	for (int i = listLevel - 1; i >= 0; i--)
 	{
@@ -133,10 +134,7 @@ void SkipList::deleteRangeByRank(const int64_t& start,const int64_t& end, std::v
 			through += current->level[i].span;
 			current = current->level[i].forward;
 		}
-//		if(through == tmpStart)
-//		{
-//			return current;
-//		}
+
 		update[i] = current;
 	}
 	tmp = current = current->level[0].forward;
@@ -152,6 +150,23 @@ void SkipList::deleteRangeByRank(const int64_t& start,const int64_t& end, std::v
 		tmp = current;
 		index++;
 	}
+}
+
+int64_t SkipList::getRank(const int64_t& member,const int64_t& score)
+{
+	printf("get %llu:%llu rank\n",member,score);
+	SKNode* current = header;
+	int64_t through = -1;
+	for (int i = listLevel - 1; i >= 0; i--)
+	{
+		while(current!=NULL && current->level[i].forward->score!=INT_MAX &&
+				(score > current->level[i].forward->score || (score==current->level[i].forward->score && member>current->level[i].forward->member)))
+		{
+			through += current->level[i].span;
+			current = current->level[i].forward;
+		}
+	}
+	return through;
 }
 
 void SkipList::deleteRangeByScore(const int64_t& start,const int64_t& end, std::vector<int64_t>& resList, const int64_t& limitCount)

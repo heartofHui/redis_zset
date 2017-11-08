@@ -24,28 +24,57 @@ private:
 	SkipList skpl;
 	std::map<int64_t,int64_t> MemScoreMap;
 public:
-	/*
+	/*function:zadd member with score
 	 * args
-	 * 		mem:data
+	 * 		mem:member
 	 * 		score:sort by score
 	 * return:
 	 * 		0:success other:fail
 	 * 		*/
+
 	int zAdd(const int64_t& mem, const int64_t& score);
+
+	/*fuction:get score of member
+	 * return:
+	 * 		0:find member other:not find member*/
 	int zScore(const int64_t& mem,int64_t& score);
+
+	/*function:return count of zset*/
 	int64_t zCount();
-	/*is start score or end score in zset range
+
+	/*function:return member's rank in zset*/
+	int64_t zRank(const int64_t& member);
+
+	/*function:is start score or end score in zset range
 	 *
 	 * return:
 	 * 		0:success other:fail*/
 	int zsetIsInRange(const int64_t& startScore, const int64_t& endScore);
+
+	/*function:get range vector by startRank and endRank
+	 * */
 	void zRange(const int64_t& startRank,const int64_t& endRank,std::vector<int64_t>& resList,const int64_t& limitCount=-1);
+
+	/*function:get reverse range vector by startRank and endRank
+	 * */
 	void zRevRange(const int64_t& startRank,const int64_t& endRank,std::vector<int64_t>& resList,const int64_t& limitCount=-1);
+
+	/*function:get range vectos by startScore and endScore*/
 	void zRangeByScore(const int64_t& startScore, const int64_t& endScore, std::vector<int64_t>& resList,const int64_t& limitCount=-1);
 
+	/*function: remove member from zset
+	 * */
 	int zrem(const int64_t& mem);
+
+	/*function: remove members between startRank and endRank
+	 * */
 	void zRemRangeByRank(const int64_t& startRank,const int64_t& endRank,const int64_t& limitCount=-1);
+
+	/*function: remove members between startScore and endScore
+	 * */
 	void zRemRangeByScore(const int64_t& startScore, const int64_t& endScore, const int64_t& limitCount = -1);
+
+	/*function: print the zset, member:score@span*/
 	void printzsetlist();
 };
 
@@ -62,6 +91,19 @@ void ClZset::zRevRange(const int64_t& startRank,const int64_t& endRank,std::vect
 int64_t ClZset::zCount()
 {
 	return skpl.length;
+}
+
+int64_t ClZset::zRank(const int64_t& member)
+{
+	std::map<int64_t,int64_t>::iterator it = MemScoreMap.find(member);
+	if(it!=MemScoreMap.end())
+	{
+		return skpl.getRank(member,it->second);
+	}
+	else
+	{
+		return -1;
+	}
 }
 
 int ClZset::zsetIsInRange(const int64_t& startScore, const int64_t& endScore)
@@ -98,6 +140,7 @@ int ClZset::zScore(const int64_t& mem,int64_t& score)
 		return 1;
 	}
 }
+
 
 int ClZset::zrem(const int64_t& mem)
 {
