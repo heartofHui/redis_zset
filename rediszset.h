@@ -15,8 +15,7 @@
 #include <stdio.h>
 #include <limits.h>
 #include <unistd.h>
-#include "../Includes/times.h"
-#include "../Includes/skiplist.h"
+#include "skiplist.h"
 using namespace std;
 
 class ClZset
