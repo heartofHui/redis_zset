@@ -24,6 +24,9 @@ private:
 	SkipList skpl;
 	std::map<int64_t,int64_t> MemScoreMap;
 public:
+	//~ClZset();
+
+
 	/*function:zadd member with score
 	 * args
 	 * 		mem:member
@@ -42,7 +45,10 @@ public:
 	/*function:return count of zset*/
 	int64_t zCount();
 
-	/*function:return member's rank in zset*/
+	/*function:return member's rank in zset
+	 * return:
+	 *     >=0 member exists
+	 *     <0  member not exists*/
 	int64_t zRank(const int64_t& member);
 
 	/*function:is start score or end score in zset range
@@ -76,6 +82,10 @@ public:
 
 	/*function: print the zset, member:score@span*/
 	void printzsetlist();
+
+	/*
+	 * function:destroy zset memory*/
+	void destroy();
 };
 
 void ClZset::zRange(const int64_t& startRank,const int64_t& endRank,std::vector<int64_t>& resList,const int64_t& limitCount)
@@ -96,7 +106,7 @@ int64_t ClZset::zCount()
 int64_t ClZset::zRank(const int64_t& member)
 {
 	std::map<int64_t,int64_t>::iterator it = MemScoreMap.find(member);
-	if(it!=MemScoreMap.end())
+	if(it != MemScoreMap.end())
 	{
 		return skpl.getRank(member,it->second);
 	}
@@ -195,6 +205,13 @@ void ClZset::zRemRangeByScore(const int64_t& startScore, const int64_t& endScore
 void ClZset::printzsetlist()
 {
 	skpl.printList();
+}
+
+void ClZset::destroy()
+{
+	MemScoreMap.clear();
+	vector<int64_t> list;
+	skpl.deleteRangeByRank(0,-1,list,-1);
 }
 
 #endif

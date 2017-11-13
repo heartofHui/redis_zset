@@ -18,7 +18,7 @@
 
 #define MAXLEVEL 12 //
 #define ZSKIPLIST_P 0.25
-#define CODE_TEST_LOG true
+//#define CODE_TEST_LOG true
 using namespace std;
 
 class SKNode
@@ -116,12 +116,12 @@ public:
 
 void SkipList::deleteRangeByRank(const int64_t& start,const int64_t& end, std::vector<int64_t>& resList, const int64_t& limitCount)
 {
-	if(start>end)
+	int64_t tmpStart = (start < 0) ? (length + start-2) : start;
+	int64_t tmpEnd = (end < 0) ? (length + end-2) : end;
+	if(tmpStart>tmpEnd)
 	{
 		return;
 	}
-	int64_t tmpStart = (start < 0) ? (length + start-2) : start;
-	int64_t tmpEnd = (end < 0) ? (length + end-2) : end;
 	SKNode *update[MAXLEVEL];
 	SKNode* current = header->level[0].forward;
 	SKNode* tmp;
@@ -154,7 +154,6 @@ void SkipList::deleteRangeByRank(const int64_t& start,const int64_t& end, std::v
 
 int64_t SkipList::getRank(const int64_t& member,const int64_t& score)
 {
-	printf("get %llu:%llu rank\n",member,score);
 	SKNode* current = header;
 	int64_t through = -1;
 	for (int i = listLevel - 1; i >= 0; i--)
@@ -329,16 +328,18 @@ SKNode* SkipList::getNodeByRank(const int64_t& rank)
 
 void SkipList::getRangeByRank(const int64_t& start,const int64_t& end, std::vector<int64_t>& resList, const int64_t& limitCount, const bool reverse)
 {
-	if(!reverse && start > end)
-	{
-		return;
-	}
-	if (reverse && start < end)
-	{
-		return;
-	}
+
 	int64_t tmpStart = (start < 0) ? (length + start-2) : start;
 	int64_t tmpEnd = (end < 0) ? (length + end-2) : end;
+
+	if(!reverse && tmpStart > tmpEnd)
+	{
+		return;
+	}
+	if (reverse && tmpStart < tmpEnd)
+	{
+		return;
+	}
 
 	SKNode* current;
 	current = getNodeByRank(tmpStart+1);
